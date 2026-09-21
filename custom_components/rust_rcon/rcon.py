@@ -55,8 +55,17 @@ class RustRconClient:
                                     data = json.loads(msg.data)
                                 except ValueError:
                                     continue
-                                if data.get("Identifier") == identifier:
-                                    return data.get("Message", "") or ""
+                                reply_id = data.get("Identifier")
+                                text = data.get("Message", "") or ""
+                                _LOGGER.warning("RCON reply id=%r (sent %s)", reply_id, identifier)
+                                if reply_id == identifier:
+                                    return text
+                                # Fallback: some setups return a different id for our reply.
+                                # Console log broadcasts use 0 / -1, so ignore those.
+                                if command == "serverinfo" and text.lstrip().startswith("{"):
+                                    return text
+                                if reply_id not in (0, -1, None) and command != "serverinfo":
+                                    return text
                             elif msg.type in (
                                 aiohttp.WSMsgType.CLOSE,
                                 aiohttp.WSMsgType.CLOSING,
