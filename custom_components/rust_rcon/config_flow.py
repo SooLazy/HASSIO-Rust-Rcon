@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import logging
-_LOGGER = logging.getLogger(__name__)
 
 from typing import Any
 
@@ -15,7 +14,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from .const import DEFAULT_PORT, DOMAIN
 from .coordinator import parse_serverinfo
 from .rcon import RustRconAuthError, RustRconClient, RustRconError
-
+_LOGGER = logging.getLogger(__name__)
 
 class RustRconConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow."""
