@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import logging
-
 from typing import Any
 
 import voluptuous as vol
@@ -14,7 +13,9 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from .const import DEFAULT_PORT, DOMAIN
 from .coordinator import parse_serverinfo
 from .rcon import RustRconAuthError, RustRconClient, RustRconError
+
 _LOGGER = logging.getLogger(__name__)
+
 
 class RustRconConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow."""
@@ -40,7 +41,7 @@ class RustRconConfigFlow(ConfigFlow, domain=DOMAIN):
             )
             try:
                 raw = await client.async_command("serverinfo")
-                        except RustRconAuthError as err:
+            except RustRconAuthError as err:
                 _LOGGER.warning("Rust RCON auth error: %s", err)
                 errors["base"] = "invalid_auth"
             except RustRconError as err:
