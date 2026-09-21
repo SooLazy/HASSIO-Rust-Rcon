@@ -1,6 +1,7 @@
 """Minimal WebRCON client for Rust."""
 from __future__ import annotations
 
+import logging
 import asyncio
 import json
 import random
@@ -8,7 +9,7 @@ from urllib.parse import quote
 
 import aiohttp
 
-
+_LOGGER = logging.getLogger(__name__)
 class RustRconError(Exception):
     """Base error."""
 
@@ -35,9 +36,11 @@ class RustRconClient:
         identifier = random.randint(1000, 2_000_000_000)
 
         async with self._lock:
+            stage = "connecting"
             try:
                 async with asyncio.timeout(timeout):
                     async with self._session.ws_connect(url, heartbeat=None) as ws:
+                        stage = "waiting for reply"
                         await ws.send_json(
                             {
                                 "Identifier": identifier,
@@ -46,6 +49,7 @@ class RustRconClient:
                             }
                         )
                         async for msg in ws:
+                            _LOGGER.warning("RCON msg: %s %s", msg.type, str(msg.data)[:200])
                             if msg.type == aiohttp.WSMsgType.TEXT:
                                 try:
                                     data = json.loads(msg.data)
@@ -61,7 +65,7 @@ class RustRconClient:
                             ):
                                 break
             except TimeoutError as err:
-                raise RustRconError("Timed out talking to the server") from err
+                raise RustRconError(f"Timed out while {stage}") from err
             except aiohttp.ClientError as err:
                 raise RustRconError(f"Connection failed: {err}") from err
 
