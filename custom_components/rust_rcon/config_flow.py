@@ -1,8 +1,8 @@
 """Config flow for Rust RCON."""
+from __future__ import annotations
+
 import logging
 _LOGGER = logging.getLogger(__name__)
-
-from __future__ import annotations
 
 from typing import Any
 
