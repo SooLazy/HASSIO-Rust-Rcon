@@ -1,0 +1,22 @@
+send_command:
+  fields:
+    command:
+      required: true
+      example: "server.save"
+      selector:
+        text:
+    entry_id:
+      required: false
+      selector:
+        text:
+say:
+  fields:
+    message:
+      required: true
+      example: "Wipe in 10 minutes!"
+      selector:
+        text:
+    entry_id:
+      required: false
+      selector:
+        text:

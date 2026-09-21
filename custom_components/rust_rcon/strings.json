@@ -1,0 +1,40 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Rust server",
+        "description": "Uses WebRCON. Enable it with +rcon.web 1 and set +rcon.port / +rcon.password.",
+        "data": {
+          "host": "Host / IP",
+          "port": "RCON port",
+          "password": "RCON password"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not connect to the RCON port.",
+      "invalid_auth": "Connected, but the server closed the socket. Check the RCON password."
+    },
+    "abort": {
+      "already_configured": "This server is already configured."
+    }
+  },
+  "services": {
+    "send_command": {
+      "name": "Send command",
+      "description": "Run a console command and return its output.",
+      "fields": {
+        "command": {"name": "Command", "description": "Console command to run."},
+        "entry_id": {"name": "Entry ID", "description": "Only needed with more than one server."}
+      }
+    },
+    "say": {
+      "name": "Say",
+      "description": "Broadcast a chat message to all players.",
+      "fields": {
+        "message": {"name": "Message", "description": "Text to broadcast."},
+        "entry_id": {"name": "Entry ID", "description": "Only needed with more than one server."}
+      }
+    }
+  }
+}
