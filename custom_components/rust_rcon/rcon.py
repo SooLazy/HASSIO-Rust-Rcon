@@ -1,15 +1,17 @@
 """Minimal WebRCON client for Rust."""
 from __future__ import annotations
 
-import logging
 import asyncio
 import json
+import logging
 import random
 from urllib.parse import quote
 
 import aiohttp
 
 _LOGGER = logging.getLogger(__name__)
+
+
 class RustRconError(Exception):
     """Base error."""
 
@@ -30,8 +32,24 @@ class RustRconClient:
         self._password = password
         self._lock = asyncio.Lock()
 
-    async def async_command(self, command: str, timeout: float = 10) -> str:
-        """Run a console command and return the server's response text."""
+    async def async_command(
+        self, command: str, timeout: float = 15, retries: int = 2
+    ) -> str:
+        """Run a command, retrying on timeouts and connection errors."""
+        last: RustRconError | None = None
+        for attempt in range(1, retries + 1):
+            try:
+                return await self._async_command_once(command, timeout)
+            except RustRconAuthError:
+                raise
+            except RustRconError as err:
+                last = err
+                _LOGGER.debug("RCON attempt %s/%s failed: %s", attempt, retries, err)
+                await asyncio.sleep(1)
+        assert last is not None
+        raise last
+
+    async def _async_command_once(self, command: str, timeout: float) -> str:
         url = f"ws://{self._host}:{self._port}/{quote(self._password, safe='')}"
         identifier = random.randint(1000, 2_000_000_000)
 
@@ -49,7 +67,6 @@ class RustRconClient:
                             }
                         )
                         async for msg in ws:
-                            _LOGGER.warning("RCON msg: %s %s", msg.type, str(msg.data)[:200])
                             if msg.type == aiohttp.WSMsgType.TEXT:
                                 try:
                                     data = json.loads(msg.data)
@@ -57,11 +74,12 @@ class RustRconClient:
                                     continue
                                 reply_id = data.get("Identifier")
                                 text = data.get("Message", "") or ""
-                                _LOGGER.warning("RCON reply id=%r (sent %s)", reply_id, identifier)
+                                _LOGGER.debug(
+                                    "RCON reply id=%r (sent %s)", reply_id, identifier
+                                )
                                 if reply_id == identifier:
                                     return text
-                                # Fallback: some setups return a different id for our reply.
-                                # Console log broadcasts use 0 / -1, so ignore those.
+                                # Fallbacks for setups that answer with another id.
                                 if command == "serverinfo" and text.lstrip().startswith("{"):
                                     return text
                                 if reply_id not in (0, -1, None) and command != "serverinfo":
