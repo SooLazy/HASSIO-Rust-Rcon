@@ -41,9 +41,11 @@ class RustRconConfigFlow(ConfigFlow, domain=DOMAIN):
             )
             try:
                 raw = await client.async_command("serverinfo")
-            except RustRconAuthError:
+                        except RustRconAuthError as err:
+                _LOGGER.warning("Rust RCON auth error: %s", err)
                 errors["base"] = "invalid_auth"
-            except RustRconError:
+            except RustRconError as err:
+                _LOGGER.warning("Rust RCON connect error: %s", err)
                 errors["base"] = "cannot_connect"
             else:
                 try:
