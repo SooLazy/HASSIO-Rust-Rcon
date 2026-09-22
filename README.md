@@ -7,6 +7,12 @@ Control a Rust dedicated server over WebRCON and expose live stats.
 - `sensor`: players (with a `player_names` attribute), queued, joining, server FPS, entities,
   uptime, max players, map, memory, network in/out, last save time, server version (disabled by default)
 - `button`: save, restart server (60s warning)
+- `text`: **Console** — type any RCON command and it runs immediately; the reply shows up in
+  the entity's `response` attribute (e.g. `{{ state_attr('text.rust_server_console', 'response') }}`).
+- `select`: **Quick command** — a dropdown of popular zero-argument commands (write config, clear
+  weather, set time to noon/midnight) for one-click use on a dashboard. Anything that needs a
+  target (kick/ban a player, teleport, give an item, wipe) belongs in the console or the
+  `rust_rcon.send_command` service instead.
 
 **Services:** `rust_rcon.send_command` (returns the console output), `rust_rcon.say`.
 
