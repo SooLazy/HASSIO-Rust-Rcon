@@ -64,3 +64,7 @@ pip install -r requirements_test.txt
 pytest tests/
 ```
 CI also runs `hassfest` and the HACS validation action on every push/PR.
+
+Bumping `custom_components/rust_rcon/manifest.json`'s `version` and merging to `main`
+automatically publishes a matching `vX.Y.Z` GitHub Release (see `.github/workflows/release.yml`),
+which is what lets HACS show that version instead of a commit hash.
