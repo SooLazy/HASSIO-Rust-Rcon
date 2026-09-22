@@ -1,32 +1,25 @@
 """Data coordinator for Rust RCON."""
 from __future__ import annotations
 
-import json
 import logging
 from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import DOMAIN, SCAN_INTERVAL
-from .rcon import RustRconClient, RustRconError
+from .parsers import parse_playerlist, parse_serverinfo
+from .rcon import RustRconAuthError, RustRconClient, RustRconError
 
 _LOGGER = logging.getLogger(__name__)
 
 type RustConfigEntry = ConfigEntry[RustRconCoordinator]
 
 
-def parse_serverinfo(raw: str) -> dict[str, Any]:
-    """Extract the JSON object from a `serverinfo` reply."""
-    start, end = raw.find("{"), raw.rfind("}")
-    if start == -1 or end == -1:
-        raise ValueError("No JSON in serverinfo reply")
-    return json.loads(raw[start : end + 1])
-
-
 class RustRconCoordinator(DataUpdateCoordinator[dict[str, Any]]):
-    """Polls `serverinfo` on an interval."""
+    """Polls `serverinfo` (and `playerlist`) on an interval."""
 
     config_entry: RustConfigEntry
 
@@ -44,6 +37,22 @@ class RustRconCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     async def _async_update_data(self) -> dict[str, Any]:
         try:
-            return parse_serverinfo(await self.client.async_command("serverinfo"))
+            info = parse_serverinfo(await self.client.async_command("serverinfo"))
+        except RustRconAuthError as err:
+            raise ConfigEntryAuthFailed(str(err)) from err
         except (RustRconError, ValueError) as err:
             raise UpdateFailed(f"Error fetching Rust server info: {err}") from err
+
+        try:
+            info["PlayerList"] = parse_playerlist(
+                await self.client.async_command("playerlist")
+            )
+        except RustRconAuthError as err:
+            raise ConfigEntryAuthFailed(str(err)) from err
+        except RustRconError as err:
+            # Not every server/plugin setup answers this command; don't fail
+            # the whole update over it, just keep the previous list (if any).
+            _LOGGER.debug("Could not fetch playerlist: %s", err)
+            info["PlayerList"] = (self.data or {}).get("PlayerList", [])
+
+        return info
