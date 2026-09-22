@@ -57,13 +57,16 @@
     },
     "button": {
       "save": {"name": "Save"},
-      "restart": {"name": "Restart server"}
+      "restart": {"name": "Restart server"},
+      "kick_player": {"name": "Kick player"},
+      "ban_player": {"name": "Ban player"}
     },
     "text": {
       "console": {"name": "Console"}
     },
     "select": {
-      "quick_command": {"name": "Quick command"}
+      "quick_command": {"name": "Quick command"},
+      "target_player": {"name": "Target player"}
     }
   },
   "services": {

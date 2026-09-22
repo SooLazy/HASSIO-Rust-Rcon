@@ -6,13 +6,17 @@ Control a Rust dedicated server over WebRCON and expose live stats.
 - `binary_sensor`: online (connectivity), restarting
 - `sensor`: players (with a `player_names` attribute), queued, joining, server FPS, entities,
   uptime, max players, map, memory, network in/out, last save time, server version (disabled by default)
-- `button`: save, restart server (60s warning)
+- `button`: save, restart server (60s warning), kick player, ban player (the latter two act on
+  whoever is currently picked in the **Target player** select)
 - `text`: **Console** — type any RCON command and it runs immediately; the reply shows up in
   the entity's `response` attribute (e.g. `{{ state_attr('text.rust_server_console', 'response') }}`).
-- `select`: **Quick command** — a dropdown of popular zero-argument commands (write config, clear
-  weather, set time to noon/midnight) for one-click use on a dashboard. Anything that needs a
-  target (kick/ban a player, teleport, give an item, wipe) belongs in the console or the
-  `rust_rcon.send_command` service instead.
+- `select`:
+  - **Quick command** — a dropdown of popular zero-argument commands (write config, clear
+    weather, set time to noon/midnight) for one-click use on a dashboard.
+  - **Target player** — pick a currently-online player by name; the list refreshes with each
+    poll. Press the **Kick player** / **Ban player** buttons to act on whoever is selected.
+    Anything else that needs a target (teleport, give an item, wipe) still belongs in the
+    console or the `rust_rcon.send_command` service.
 
 **Services:** `rust_rcon.send_command` (returns the console output), `rust_rcon.say`.
 

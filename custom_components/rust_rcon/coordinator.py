@@ -34,6 +34,7 @@ class RustRconCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             update_interval=SCAN_INTERVAL,
         )
         self.client = client
+        self.selected_player: dict[str, Any] | None = None
 
     async def _async_update_data(self) -> dict[str, Any]:
         try:

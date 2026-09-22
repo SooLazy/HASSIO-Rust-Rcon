@@ -49,7 +49,10 @@ async def async_setup_entry(
 ) -> None:
     """Set up buttons."""
     coordinator = entry.runtime_data
-    async_add_entities(RustButton(coordinator, desc) for desc in BUTTONS)
+    async_add_entities(
+        [RustButton(coordinator, desc) for desc in BUTTONS]
+        + [RustKickPlayer(coordinator), RustBanPlayer(coordinator)]
+    )
 
 
 class RustButton(RustEntity, ButtonEntity):
@@ -69,3 +72,46 @@ class RustButton(RustEntity, ButtonEntity):
         except RustRconError as err:
             raise HomeAssistantError(str(err)) from err
         await self.coordinator.async_request_refresh()
+
+
+class _RustPlayerActionButton(RustEntity, ButtonEntity):
+    """Base for buttons that act on whichever player select.target_player holds."""
+
+    _command_template: str
+    _no_target_error = "No player selected. Choose one in Target player first."
+
+    async def async_press(self) -> None:
+        player = self.coordinator.selected_player
+        if player is None:
+            raise HomeAssistantError(self._no_target_error)
+        target = player.get("SteamID") or player.get("DisplayName")
+        command = self._command_template.format(target=target)
+        try:
+            await self.coordinator.client.async_command(command)
+        except RustRconError as err:
+            raise HomeAssistantError(str(err)) from err
+        await self.coordinator.async_request_refresh()
+
+
+class RustKickPlayer(_RustPlayerActionButton):
+    """Kick the player currently selected in select.target_player."""
+
+    _attr_translation_key = "kick_player"
+    _attr_icon = "mdi:account-remove"
+    _attr_entity_category = EntityCategory.CONFIG
+    _command_template = 'kick "{target}" "Kicked via Home Assistant"'
+
+    def __init__(self, coordinator: RustRconCoordinator) -> None:
+        super().__init__(coordinator, "kick_player")
+
+
+class RustBanPlayer(_RustPlayerActionButton):
+    """Ban the player currently selected in select.target_player."""
+
+    _attr_translation_key = "ban_player"
+    _attr_icon = "mdi:account-cancel"
+    _attr_entity_category = EntityCategory.CONFIG
+    _command_template = 'ban "{target}" "Banned via Home Assistant"'
+
+    def __init__(self, coordinator: RustRconCoordinator) -> None:
+        super().__init__(coordinator, "ban_player")
