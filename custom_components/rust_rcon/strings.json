@@ -58,6 +58,12 @@
     "button": {
       "save": {"name": "Save"},
       "restart": {"name": "Restart server"}
+    },
+    "text": {
+      "console": {"name": "Console"}
+    },
+    "select": {
+      "quick_command": {"name": "Quick command"}
     }
   },
   "services": {
