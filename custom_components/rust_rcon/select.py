@@ -22,10 +22,17 @@ POPULAR_COMMANDS: dict[str, str] = {
 }
 
 
+def _player_label(player: dict) -> str:
+    name = player.get("DisplayName") or "Unknown"
+    steam_id = player.get("SteamID") or "?"
+    return f"{name} ({steam_id})"
+
+
 async def async_setup_entry(
     hass: HomeAssistant, entry: RustConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
-    async_add_entities([RustQuickCommand(entry.runtime_data)])
+    coordinator = entry.runtime_data
+    async_add_entities([RustQuickCommand(coordinator), RustTargetPlayer(coordinator)])
 
 
 class RustQuickCommand(RustEntity, SelectEntity):
@@ -47,3 +54,33 @@ class RustQuickCommand(RustEntity, SelectEntity):
         self._attr_current_option = option
         self.async_write_ha_state()
         await self.coordinator.async_request_refresh()
+
+
+class RustTargetPlayer(RustEntity, SelectEntity):
+    """Pick an online player for the kick/ban buttons to act on."""
+
+    _attr_translation_key = "target_player"
+    _attr_icon = "mdi:account-search"
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(self, coordinator: RustRconCoordinator) -> None:
+        super().__init__(coordinator, "target_player")
+
+    @property
+    def options(self) -> list[str]:
+        return [_player_label(p) for p in (self.coordinator.data or {}).get("PlayerList", [])]
+
+    @property
+    def current_option(self) -> str | None:
+        selected = self.coordinator.selected_player
+        if selected is None:
+            return None
+        label = _player_label(selected)
+        return label if label in self.options else None
+
+    async def async_select_option(self, option: str) -> None:
+        for player in (self.coordinator.data or {}).get("PlayerList", []):
+            if _player_label(player) == option:
+                self.coordinator.selected_player = player
+                break
+        self.async_write_ha_state()
