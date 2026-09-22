@@ -37,6 +37,7 @@
   },
   "entity": {
     "sensor": {
+      "hostname": {"name": "Hostname"},
       "players": {"name": "Players"},
       "max_players": {"name": "Max players"},
       "queued": {"name": "Queued players"},

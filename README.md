@@ -4,8 +4,9 @@ Control a Rust dedicated server over WebRCON and expose live stats.
 
 **Entities:**
 - `binary_sensor`: online (connectivity), restarting
-- `sensor`: players (with a `player_names` attribute), queued, joining, server FPS, entities,
-  uptime, max players, map, memory, network in/out, last save time, server version (disabled by default)
+- `sensor`: hostname, players (with a `player_names` attribute), queued, joining, server FPS,
+  entities, uptime, max players, map, memory, network in/out, last save time, server version
+  (disabled by default)
 - `button`: save, restart server (60s warning), kick player, ban player (the latter two act on
   whoever is currently picked in the **Target player** select)
 - `text`: **Console** — type any RCON command and it runs immediately; the reply shows up in
@@ -28,6 +29,12 @@ Control a Rust dedicated server over WebRCON and expose live stats.
 If the RCON password (or host/port) changes later, use the integration's **Reconfigure** action
 instead of removing and re-adding it. If a poll fails auth, HA will prompt you to reauthenticate
 automatically.
+
+The device/integration name is set to the host/IP you connect with, not the server's in-game
+Hostname (which is often a long, decorated string) — that's still available as the **Hostname**
+sensor. Already set up and want the shorter name? Just run **Reconfigure** once; it re-titles the
+entry without needing to remove and re-add it. You can also rename the device to anything you like
+from Settings -> Devices & services -> Devices.
 
 ## Server side
 Launch args (or AMP's equivalent settings): `+rcon.web 1 +rcon.port 28016 +rcon.password "yourpass"`.

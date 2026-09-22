@@ -11,7 +11,6 @@ from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import DEFAULT_PORT, DOMAIN
-from .parsers import parse_serverinfo
 from .rcon import RustRconAuthError, RustRconClient, RustRconError
 
 _LOGGER = logging.getLogger(__name__)
@@ -34,8 +33,8 @@ class RustRconConfigFlow(ConfigFlow, domain=DOMAIN):
 
     async def _async_test_connection(
         self, user_input: dict[str, Any]
-    ) -> tuple[dict[str, str], str | None]:
-        """Try to connect, returning (errors, title)."""
+    ) -> dict[str, str]:
+        """Try to connect, returning any errors."""
         client = RustRconClient(
             async_get_clientsession(self.hass),
             user_input[CONF_HOST],
@@ -43,18 +42,14 @@ class RustRconConfigFlow(ConfigFlow, domain=DOMAIN):
             user_input[CONF_PASSWORD],
         )
         try:
-            raw = await client.async_command("serverinfo")
+            await client.async_command("serverinfo")
         except RustRconAuthError as err:
             _LOGGER.warning("Rust RCON auth error: %s", err)
-            return {"base": "invalid_auth"}, None
+            return {"base": "invalid_auth"}
         except RustRconError as err:
             _LOGGER.warning("Rust RCON connect error: %s", err)
-            return {"base": "cannot_connect"}, None
-        try:
-            title = parse_serverinfo(raw).get("Hostname") or user_input[CONF_HOST]
-        except ValueError:
-            title = user_input[CONF_HOST]
-        return {}, title
+            return {"base": "cannot_connect"}
+        return {}
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -67,9 +62,11 @@ class RustRconConfigFlow(ConfigFlow, domain=DOMAIN):
             )
             self._abort_if_unique_id_configured()
 
-            errors, title = await self._async_test_connection(user_input)
+            errors = await self._async_test_connection(user_input)
             if not errors:
-                return self.async_create_entry(title=title, data=user_input)
+                return self.async_create_entry(
+                    title=user_input[CONF_HOST], data=user_input
+                )
 
         return self.async_show_form(
             step_id="user",
@@ -94,10 +91,10 @@ class RustRconConfigFlow(ConfigFlow, domain=DOMAIN):
                 )
                 self._abort_if_unique_id_configured()
 
-            errors, title = await self._async_test_connection(user_input)
+            errors = await self._async_test_connection(user_input)
             if not errors:
                 return self.async_update_reload_and_abort(
-                    entry, title=title, data=user_input
+                    entry, title=user_input[CONF_HOST], data=user_input
                 )
 
         return self.async_show_form(
@@ -122,10 +119,10 @@ class RustRconConfigFlow(ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             merged = {**entry.data, **user_input}
-            errors, title = await self._async_test_connection(merged)
+            errors = await self._async_test_connection(merged)
             if not errors:
                 return self.async_update_reload_and_abort(
-                    entry, title=title, data=merged
+                    entry, title=merged[CONF_HOST], data=merged
                 )
 
         return self.async_show_form(
