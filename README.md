@@ -13,7 +13,8 @@ Control a Rust dedicated server over WebRCON and expose live stats.
   the entity's `response` attribute (e.g. `{{ state_attr('text.rust_server_console', 'response') }}`).
 - `select`:
   - **Quick command** — a dropdown of popular zero-argument commands (write config, clear
-    weather, set time to noon/midnight) for one-click use on a dashboard.
+    weather, set time to noon/midnight) for one-click use on a dashboard. Add your own or remove
+    any of them from Settings -> Devices & services -> Rust RCON -> **Configure**.
   - **Target player** — pick a currently-online player by name; the list refreshes with each
     poll. Press the **Kick player** / **Ban player** buttons to act on whoever is selected.
     Anything else that needs a target (teleport, give an item, wipe) still belongs in the

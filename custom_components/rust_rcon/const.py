@@ -10,3 +10,5 @@ SERVICE_SAY = "say"
 ATTR_COMMAND = "command"
 ATTR_MESSAGE = "message"
 ATTR_ENTRY_ID = "entry_id"
+
+OPT_CUSTOM_COMMANDS = "custom_commands"
