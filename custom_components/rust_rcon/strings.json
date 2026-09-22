@@ -9,6 +9,22 @@
           "port": "RCON port",
           "password": "RCON password"
         }
+      },
+      "reconfigure": {
+        "title": "Update Rust server connection",
+        "description": "Uses WebRCON. Enable it with +rcon.web 1 and set +rcon.port / +rcon.password.",
+        "data": {
+          "host": "Host / IP",
+          "port": "RCON port",
+          "password": "RCON password"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Reauthenticate with Rust server",
+        "description": "The RCON password for {name} no longer works. Enter the current password.",
+        "data": {
+          "password": "RCON password"
+        }
       }
     },
     "error": {
@@ -17,6 +33,31 @@
     },
     "abort": {
       "already_configured": "This server is already configured."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "players": {"name": "Players"},
+      "max_players": {"name": "Max players"},
+      "queued": {"name": "Queued players"},
+      "joining": {"name": "Joining players"},
+      "fps": {"name": "Server FPS"},
+      "entities": {"name": "Entities"},
+      "uptime": {"name": "Uptime"},
+      "map": {"name": "Map"},
+      "memory": {"name": "Memory"},
+      "network_in": {"name": "Network in"},
+      "network_out": {"name": "Network out"},
+      "save_created": {"name": "Last save"},
+      "version": {"name": "Server version"}
+    },
+    "binary_sensor": {
+      "online": {"name": "Online"},
+      "restarting": {"name": "Restarting"}
+    },
+    "button": {
+      "save": {"name": "Save"},
+      "restart": {"name": "Restart server"}
     }
   },
   "services": {

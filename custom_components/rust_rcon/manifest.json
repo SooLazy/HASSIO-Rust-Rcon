@@ -3,9 +3,9 @@
   "name": "Rust RCON",
   "codeowners": [],
   "config_flow": true,
-  "documentation": "https://github.com/YOUR_USER/ha-rust-rcon",
-  "issue_tracker": "https://github.com/YOUR_USER/ha-rust-rcon/issues",
+  "documentation": "https://github.com/soolazy/hassio-rust-rcon",
+  "issue_tracker": "https://github.com/soolazy/hassio-rust-rcon/issues",
   "iot_class": "local_polling",
   "requirements": [],
-  "version": "0.0.1"
+  "version": "0.2.0"
 }

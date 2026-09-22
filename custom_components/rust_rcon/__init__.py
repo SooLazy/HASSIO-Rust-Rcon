@@ -22,7 +22,7 @@ from .const import (
 from .coordinator import RustConfigEntry, RustRconCoordinator
 from .rcon import RustRconClient, RustRconError
 
-PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR]
+PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR, Platform.BUTTON]
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 SEND_SCHEMA = vol.Schema(
