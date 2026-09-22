@@ -36,6 +36,13 @@ class RustSensorDescription(SensorEntityDescription):
 
 SENSORS: tuple[RustSensorDescription, ...] = (
     RustSensorDescription(
+        key="hostname",
+        translation_key="hostname",
+        icon="mdi:server-network",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda d: d.get("Hostname"),
+    ),
+    RustSensorDescription(
         key="players",
         translation_key="players",
         icon="mdi:account-group",
