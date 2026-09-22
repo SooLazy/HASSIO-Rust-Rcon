@@ -7,6 +7,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
+from .const import OPT_CUSTOM_COMMANDS
 from .coordinator import RustConfigEntry, RustRconCoordinator
 from .entity import RustEntity
 from .rcon import RustRconError
@@ -36,19 +37,33 @@ async def async_setup_entry(
 
 
 class RustQuickCommand(RustEntity, SelectEntity):
-    """Run one of a curated set of popular RCON commands."""
+    """Run one of the built-in popular commands, or a user-added one.
+
+    Custom commands are managed from the integration's "Configure" option
+    (Settings -> Devices & services -> Rust RCON -> Configure) and stored in
+    the config entry's options; a custom command with the same label as a
+    built-in one overrides it.
+    """
 
     _attr_translation_key = "quick_command"
     _attr_icon = "mdi:console-line"
     _attr_entity_category = EntityCategory.CONFIG
-    _attr_options = list(POPULAR_COMMANDS)
 
     def __init__(self, coordinator: RustRconCoordinator) -> None:
         super().__init__(coordinator, "quick_command")
 
+    @property
+    def _commands(self) -> dict[str, str]:
+        custom = self.coordinator.config_entry.options.get(OPT_CUSTOM_COMMANDS, {})
+        return {**POPULAR_COMMANDS, **custom}
+
+    @property
+    def options(self) -> list[str]:
+        return list(self._commands)
+
     async def async_select_option(self, option: str) -> None:
         try:
-            await self.coordinator.client.async_command(POPULAR_COMMANDS[option])
+            await self.coordinator.client.async_command(self._commands[option])
         except RustRconError as err:
             raise HomeAssistantError(str(err)) from err
         self._attr_current_option = option

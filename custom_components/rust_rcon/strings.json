@@ -35,6 +35,38 @@
       "already_configured": "This server is already configured."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Quick commands",
+        "menu_options": {
+          "add_command": "Add a quick command",
+          "remove_command": "Remove a quick command"
+        }
+      },
+      "add_command": {
+        "title": "Add a quick command",
+        "description": "Appears as a new option in the Quick command dropdown. The command is sent to RCON exactly as typed.",
+        "data": {
+          "label": "Label",
+          "command": "RCON command"
+        }
+      },
+      "remove_command": {
+        "title": "Remove quick commands",
+        "data": {
+          "labels": "Commands to remove"
+        }
+      }
+    },
+    "error": {
+      "invalid_command": "Label and command can't be empty.",
+      "duplicate_label": "A quick command with that label already exists."
+    },
+    "abort": {
+      "no_custom_commands": "No custom quick commands to remove yet."
+    }
+  },
   "entity": {
     "sensor": {
       "hostname": {"name": "Hostname - {server_name}"},
