@@ -30,11 +30,15 @@ If the RCON password (or host/port) changes later, use the integration's **Recon
 instead of removing and re-adding it. If a poll fails auth, HA will prompt you to reauthenticate
 automatically.
 
-The device/integration name is set to the host/IP you connect with, not the server's in-game
-Hostname (which is often a long, decorated string) — that's still available as the **Hostname**
-sensor. Already set up and want the shorter name? Just run **Reconfigure** once; it re-titles the
-entry without needing to remove and re-add it. You can also rename the device to anything you like
-from Settings -> Devices & services -> Devices.
+The integration entry itself (Settings -> Devices & services) is titled with the host/IP you
+connect with, not the server's in-game Hostname (which is often a long, decorated string).
+Individual entities are **not** grouped under a device, though — each is named
+`"<Entity> - <Server Name>"` (e.g. `Kick player - [AU] Eclipse || 5x | No BPs | No Workbench`),
+using the server's actual in-game Hostname, polled live. This is a deliberate trade-off: Home
+Assistant always puts a device's name *before* the entity name for device-grouped entities with no
+way to reverse that order, so getting "entity name first" means these entities aren't attached to a
+device at all. If the server is renamed in-game, existing entity names pick that up next time the
+integration reloads (e.g. after **Reconfigure**, or a restart).
 
 ## Server side
 Launch args (or AMP's equivalent settings): `+rcon.web 1 +rcon.port 28016 +rcon.password "yourpass"`.

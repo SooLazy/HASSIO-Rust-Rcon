@@ -1,15 +1,20 @@
 """Base entity."""
 from __future__ import annotations
 
-from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN
 from .coordinator import RustRconCoordinator
 
 
 class RustEntity(CoordinatorEntity[RustRconCoordinator]):
-    """Shared device info / naming."""
+    """Shared naming: "<entity name> - <server name>", not grouped under a device.
+
+    Home Assistant's registry always puts a device's name *before* the entity
+    name for device-grouped entities, with no way to reverse that order. To
+    get "<entity name> - <server name>" instead, these entities aren't
+    attached to a device at all - the whole string is composed via
+    translation placeholders (see strings.json) instead of device grouping.
+    """
 
     _attr_has_entity_name = True
 
@@ -17,9 +22,5 @@ class RustEntity(CoordinatorEntity[RustRconCoordinator]):
         super().__init__(coordinator)
         entry = coordinator.config_entry
         self._attr_unique_id = f"{entry.entry_id}_{key}"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, entry.entry_id)},
-            name=entry.title,
-            manufacturer="Facepunch",
-            model="Rust dedicated server",
-        )
+        server_name = (coordinator.data or {}).get("Hostname") or entry.title
+        self._attr_translation_placeholders = {"server_name": server_name}

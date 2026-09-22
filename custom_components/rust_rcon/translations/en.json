@@ -37,37 +37,37 @@
   },
   "entity": {
     "sensor": {
-      "hostname": {"name": "Hostname"},
-      "players": {"name": "Players"},
-      "max_players": {"name": "Max players"},
-      "queued": {"name": "Queued players"},
-      "joining": {"name": "Joining players"},
-      "fps": {"name": "Server FPS"},
-      "entities": {"name": "Entities"},
-      "uptime": {"name": "Uptime"},
-      "map": {"name": "Map"},
-      "memory": {"name": "Memory"},
-      "network_in": {"name": "Network in"},
-      "network_out": {"name": "Network out"},
-      "save_created": {"name": "Last save"},
-      "version": {"name": "Server version"}
+      "hostname": {"name": "Hostname - {server_name}"},
+      "players": {"name": "Players - {server_name}"},
+      "max_players": {"name": "Max players - {server_name}"},
+      "queued": {"name": "Queued players - {server_name}"},
+      "joining": {"name": "Joining players - {server_name}"},
+      "fps": {"name": "Server FPS - {server_name}"},
+      "entities": {"name": "Entities - {server_name}"},
+      "uptime": {"name": "Uptime - {server_name}"},
+      "map": {"name": "Map - {server_name}"},
+      "memory": {"name": "Memory - {server_name}"},
+      "network_in": {"name": "Network in - {server_name}"},
+      "network_out": {"name": "Network out - {server_name}"},
+      "save_created": {"name": "Last save - {server_name}"},
+      "version": {"name": "Server version - {server_name}"}
     },
     "binary_sensor": {
-      "online": {"name": "Online"},
-      "restarting": {"name": "Restarting"}
+      "online": {"name": "Online - {server_name}"},
+      "restarting": {"name": "Restarting - {server_name}"}
     },
     "button": {
-      "save": {"name": "Save"},
-      "restart": {"name": "Restart server"},
-      "kick_player": {"name": "Kick player"},
-      "ban_player": {"name": "Ban player"}
+      "save": {"name": "Save - {server_name}"},
+      "restart": {"name": "Restart server - {server_name}"},
+      "kick_player": {"name": "Kick player - {server_name}"},
+      "ban_player": {"name": "Ban player - {server_name}"}
     },
     "text": {
-      "console": {"name": "Console"}
+      "console": {"name": "Console - {server_name}"}
     },
     "select": {
-      "quick_command": {"name": "Quick command"},
-      "target_player": {"name": "Target player"}
+      "quick_command": {"name": "Quick command - {server_name}"},
+      "target_player": {"name": "Target player - {server_name}"}
     }
   },
   "services": {
