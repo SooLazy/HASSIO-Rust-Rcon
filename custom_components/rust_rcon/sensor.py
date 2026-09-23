@@ -47,7 +47,11 @@ SENSORS: tuple[RustSensorDescription, ...] = (
         translation_key="players",
         icon="mdi:account-group",
         state_class=SensorStateClass.MEASUREMENT,
-        value_fn=lambda d: d.get("Players"),
+        # serverinfo's own "Players" count is unreliable on some servers (can
+        # get stuck at 0 while players are genuinely connected), so count the
+        # playerlist poll instead - the same data the player_names attribute
+        # and the Target player picker already use, and it's proven correct.
+        value_fn=lambda d: len(d.get("PlayerList", [])),
         attrs_fn=lambda d: {
             "player_names": [
                 p.get("DisplayName")
